@@ -3,7 +3,9 @@ dbs
 
 # Dou Butsu Shogi JS
 
-Javascriptでうごくどうぶつしょうぎです。最終的にはAI同士の対戦を可能にしたいです。
+Javascriptでうごくどうぶつしょうぎです。開発者募集中です。
+
+最終的にはAI同士の対戦を可能にしたいです。
 
 ## TODO
 
