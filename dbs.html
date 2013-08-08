@@ -1,0 +1,133 @@
+<html>
+<head>
+<title>DBS</title>
+</head>
+<body>
+<h1>DBS</h1>
+<div id="mochi_white"></div>
+<table border="1">
+<tr><td /><td /><td /></tr>
+<tr><td /><td /><td /></tr>
+<tr><td /><td /><td /></tr>
+<tr><td /><td /><td /></tr>
+</table>
+<div id="mochi_black"></div>
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+
+<script>
+
+// 駒定数定義
+const SPACE = -1
+const BABY = 0
+const CHICKEN = 1
+const ELEPHANT = 2
+const GIRAFFE = 3
+const LION = 4
+const WHITE = 5
+
+// 盤面表示
+const BAN_ICON = [
+  "　",
+  "↑ひ", "↑に", "↑ぞ", "↑き", "↑ら",
+  "↓ひ", "↓に", "↓ぞ", "↓き", "↓ら",
+]
+
+const MOCHI_ICON = [
+  "ひよこ：", "にわとり：", "ぞう：", "きりん：", "らいおん："
+]
+
+const BAN_DEFAULT = [
+  GIRAFFE + WHITE, LION + WHITE, ELEPHANT + WHITE,
+  SPACE, BABY + WHITE, SPACE,
+  SPACE, BABY, SPACE,
+  ELEPHANT, LION, GIRAFFE
+]
+
+const MOCHI_DEFAULT = [
+  0,0,0,0,0,
+  0,0,0,0,0,
+]
+
+var ban = BAN_DEFAULT
+var mochi = MOCHI_DEFAULT
+
+// banを画面に反映する
+function showBan(){
+  for(var x = 0;x < 3;x++){
+    for(var y = 0;y < 4;y++){
+      var i = x + y * 3
+      $("tr").eq(y).find("td").eq(x).text(BAN_ICON[ban[i] + 1])
+    }
+  }
+  var t = ""
+  for(var i = 0;i < WHITE;i++){
+    if(0 < mochi[i]) t += MOCHI_ICON[i] + mochi[i]
+  }
+  $("#mochi_black").text(t)
+
+  var t = ""
+  for(var i = WHITE;i < WHITE * 2;i++){
+    if(0 < mochi[i]) t += MOCHI_ICON[i % WHITE] + mochi[i]
+  }
+  $("#mochi_white").text(t)
+
+}
+
+// 合法手列挙
+function listupHands(vban, blackTurn){
+  var hands = []
+  for(var i = 0;i < vban.length;i++){
+    var x = i % 3
+    var y = i / 3
+  }
+}
+
+// 駒反転
+function reverseBW(koma){
+  return (1 - koma / WHITE) * WHITE + (koma % WHITE)
+}
+
+// にわとりをひよこに戻す
+function chikin2baby(koma){
+  if(koma == CHICKEN) return BABY
+  if(koma == CHICKEN + WHITE) return BABY + WHITE
+  return koma
+}
+
+// 手
+function Hand(from, to, reverse){
+  this.from = from || -1
+  this.to = to || -1
+  this.reverse = reverse || false
+}
+
+Hand.prototype = {
+  from : -1,
+  to : -1,
+  reverse : false,
+
+  execute : function(){
+    // TODO 有効手チェック必要か？
+    if(0 <= ban[this.to]){
+      // 持ち駒処理
+      mochi[chikin2baby(reverseBW(ban[this.to]))]++
+    }
+    if(this.from < 0){
+      // 持ち駒使用
+      var i = -this.from - 1
+      mochi[i]--
+      ban[this.to] = i
+    }else{
+      ban[this.to] = ban[this.from] + (this.reverse ? 1 : 0)
+      ban[this.from] = SPACE
+    }
+  }
+}
+
+
+$(function(){
+  showBan()
+})
+</script>
+</body>
+</html>
