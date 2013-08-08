@@ -13,5 +13,7 @@ Javascriptでうごくどうぶつしょうぎです。最終的にはAI同士�
 ## API
 
 * showBan() UIにbanを反映する
-* new Hand(from, to, reverseFlag) fromからtoへ駒を移動する手を生成する。reverseFlagが立っているとひよこがにわとりになる。
+* new Hand(from, to, reverseFlag) fromからtoへ駒を移動する手を生成する。
+  * reverseFlag(default false)が立っているとひよこがにわとりになる。
+  * fromが-1なら持ち駒を打つ
 * Hand.execute() Handの結果をglobalなbanに反映する。
