@@ -106,20 +106,23 @@ Hand.prototype = {
   to : -1,
   reverse : false,
 
-  execute : function(){
+  // 盤面に対して手を実行する
+  // vbanを渡さない場合はグローバルなbanを操作する
+  execute : function(vban){
+    var lban = vban || ban
     // TODO 有効手チェック必要か？
-    if(0 <= ban[this.to]){
+    if(0 <= lban[this.to]){
       // 持ち駒処理
-      mochi[chikin2baby(reverseBW(ban[this.to]))]++
+      mochi[chikin2baby(reverseBW(lban[this.to]))]++
     }
     if(this.from < 0){
       // 持ち駒使用
       var i = -this.from - 1
       mochi[i]--
-      ban[this.to] = i
+      lban[this.to] = i
     }else{
-      ban[this.to] = ban[this.from] + (this.reverse ? 1 : 0)
-      ban[this.from] = SPACE
+      lban[this.to] = lban[this.from] + (this.reverse ? 1 : 0)
+      lban[this.from] = SPACE
     }
   }
 }

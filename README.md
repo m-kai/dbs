@@ -14,4 +14,5 @@ Javascriptでうごくどうぶつしょうぎです。最終的にはAI同士�
 
 * showBan() UIにbanを反映する
 * new Hand(from, to, reverseFlag) fromからtoへ駒を移動する手を生成する。reverseFlagが立っているとひよこがにわとりになる。
-* Hand.execute() Handの結果をglobalなbanに反映する。
+* Hand.execute(vban) Handの結果をvbanあるいはglobalなbanに反映する。
+  * TODO vbanの時に持ち駒がアレ。持ち駒情報もvbanに含めるか、Banmenクラスを作るべき
