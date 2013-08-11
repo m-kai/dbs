@@ -48,11 +48,13 @@ const MOCHI_DEFAULT = [
   0,0,0,0,0,
 ]
 
-var ban = BAN_DEFAULT
-var mochi = MOCHI_DEFAULT
+// ---- VIEW ----
 
 // banを画面に反映する
 function showBan(){
+  var ban = gban.ban
+  var mochi = gban.mochi
+
   for(var x = 0;x < 3;x++){
     for(var y = 0;y < 4;y++){
       var i = x + y * 3
@@ -72,6 +74,8 @@ function showBan(){
   $("#mochi_white").text(t)
 
 }
+
+// ---- Model ----
 
 // 合法手列挙
 function listupHands(vban, blackTurn){
@@ -94,6 +98,37 @@ function chikin2baby(koma){
   return koma
 }
 
+// 盤面
+function Banmen(ban, mochi){
+  this.ban = ban || BAN_DEFAULT
+  this.mochi = mochi || MOCHI_DEFAULT
+}
+
+Banmen.prototype = {
+  ban : BAN_DEFAULT,
+  mochi : MOCHI_DEFAULT,
+  
+  // 盤面に対して手を実行する
+  execute : function(hand){
+    if(!hand) return
+
+    if(0 <= this.ban[hand.to]){
+      // 駒を取る
+      this.mochi[chikin2baby(reverseBW(this.ban[hand.to]))]++
+    }
+    if(hand.from < 0){
+      // 持ち駒使用
+      var i = -hand.from - 1
+      this.mochi[i]--
+      this.ban[hand.to] = i
+    } else {
+      // 普通の移動
+      this.ban[hand.to] = this.ban[hand.from] + (hand.reverse ? 1 : 0)
+      this.ban[hand.from] = SPACE
+    }
+  },
+}
+
 // 手
 function Hand(from, to, reverse){
   this.from = from || -1
@@ -109,26 +144,15 @@ Hand.prototype = {
   // 盤面に対して手を実行する
   // vbanを渡さない場合はグローバルなbanを操作する
   execute : function(vban){
-    var lban = vban || ban
-    // TODO 有効手チェック必要か？
-    if(0 <= lban[this.to]){
-      // 持ち駒処理
-      mochi[chikin2baby(reverseBW(lban[this.to]))]++
-    }
-    if(this.from < 0){
-      // 持ち駒使用
-      var i = -this.from - 1
-      mochi[i]--
-      lban[this.to] = i
-    }else{
-      lban[this.to] = lban[this.from] + (this.reverse ? 1 : 0)
-      lban[this.from] = SPACE
-    }
+    (vban || gban).execute(this)
   }
 }
 
+// global object
+var gban
 
 $(function(){
+  gban = new Banmen()
   showBan()
 })
 </script>
