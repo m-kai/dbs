@@ -48,6 +48,14 @@ const MOCHI_DEFAULT = [
   0,0,0,0,0,
 ]
 
+// ---- DSL系 ----
+
+Array.prototype.clone = function(){
+  var arr = []
+  for(var i = 0;i < this.length;i++) arr[i] = this[i]
+  return arr
+}
+
 // ---- VIEW ----
 
 // banを画面に反映する
@@ -100,8 +108,8 @@ function chikin2baby(koma){
 
 // 盤面
 function Banmen(ban, mochi){
-  this.ban = ban || BAN_DEFAULT
-  this.mochi = mochi || MOCHI_DEFAULT
+  this.ban = ban || BAN_DEFAULT.clone()
+  this.mochi = mochi || MOCHI_DEFAULT.clone()
 }
 
 Banmen.prototype = {
@@ -111,6 +119,8 @@ Banmen.prototype = {
   // 盤面に対して手を実行する
   execute : function(hand){
     if(!hand) return
+
+    var nextBan = this.clone()
 
     if(0 <= this.ban[hand.to]){
       // 駒を取る
@@ -127,6 +137,11 @@ Banmen.prototype = {
       this.ban[hand.from] = SPACE
     }
   },
+  
+  // コピーを作る
+  clone : function(){
+    return new Banmen(this.ban.clone(), this.mochi.clone())
+  }
 }
 
 // 手
