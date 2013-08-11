@@ -122,26 +122,28 @@ Banmen.prototype = {
 
     var nextBan = this.clone()
 
-    if(0 <= this.ban[hand.to]){
+    if(0 <= nextBan.ban[hand.to]){
       // 駒を取る
-      this.mochi[chikin2baby(reverseBW(this.ban[hand.to]))]++
+      nextBan.mochi[chikin2baby(reverseBW(nextBan.ban[hand.to]))]++
     }
     if(hand.from < 0){
       // 持ち駒使用
       var i = -hand.from - 1
-      this.mochi[i]--
-      this.ban[hand.to] = i
+      nextBan.mochi[i]--
+      nextBan.ban[hand.to] = i
     } else {
       // 普通の移動
-      this.ban[hand.to] = this.ban[hand.from] + (hand.reverse ? 1 : 0)
-      this.ban[hand.from] = SPACE
+      nextBan.ban[hand.to] = nextBan.ban[hand.from] + (hand.reverse ? 1 : 0)
+      nextBan.ban[hand.from] = SPACE
     }
+
+    return nextBan
   },
   
   // コピーを作る
   clone : function(){
     return new Banmen(this.ban.clone(), this.mochi.clone())
-  }
+  },
 }
 
 // 手
@@ -155,12 +157,13 @@ Hand.prototype = {
   from : -1,
   to : -1,
   reverse : false,
+}
 
-  // 盤面に対して手を実行する
-  // vbanを渡さない場合はグローバルなbanを操作する
-  execute : function(vban){
-    (vban || gban).execute(this)
-  }
+// ---- Utility Methods ----
+
+function execute(hand){
+  gban = gban.execute(hand)
+  showBan()
 }
 
 // global object
