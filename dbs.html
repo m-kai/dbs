@@ -96,7 +96,7 @@ function listupHands(vban, blackTurn){
 
 // 駒反転
 function reverseBW(koma){
-  return (1 - koma / WHITE) * WHITE + (koma % WHITE)
+  return (1 - Math.floor(koma / WHITE)) * WHITE + (koma % WHITE)
 }
 
 // にわとりをひよこに戻す
@@ -148,8 +148,8 @@ Banmen.prototype = {
 
 // 手
 function Hand(from, to, reverse){
-  this.from = from || -1
-  this.to = to || -1
+  this.from = from == null ? -1 : from
+  this.to = to == null ? -1 : to
   this.reverse = reverse || false
 }
 
