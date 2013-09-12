@@ -85,15 +85,6 @@ function showBan(){
 
 // ---- Model ----
 
-// 合法手列挙
-function listupHands(vban, blackTurn){
-  var hands = []
-  for(var i = 0;i < vban.length;i++){
-    var x = i % 3
-    var y = i / 3
-  }
-}
-
 // 駒反転
 function reverseBW(koma){
   return (1 - Math.floor(koma / WHITE)) * WHITE + (koma % WHITE)
@@ -144,6 +135,19 @@ Banmen.prototype = {
   clone : function(){
     return new Banmen(this.ban.clone(), this.mochi.clone())
   },
+
+  // 合法手リストを取得する
+  createLegalHands() : function(isBlackTurn){
+    var hands = []
+    // 目的マスでループ
+    for(var i = 0;i < vban.length;i++){
+      var x = i % 3
+      var y = i / 3
+      // TODO 周辺8マスの駒をサーチ
+      // TODO 持ち駒をサーチ
+    }
+  },
+
 }
 
 // 手
