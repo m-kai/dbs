@@ -25,6 +25,30 @@ const GIRAFFE = 3
 const LION = 4
 const WHITE = 5
 
+// 駒動き定義
+const BABY_MOVES = [[0, -1]]
+const CHIKEN_MOVES = [
+  [-1, -1], [0, -1], [1, -1],
+  [-1, 0], [1, 0],
+  [0, 1]
+]
+const ELEPHANT_MOVES = [
+  [-1, -1], [1, -1],
+  [-1, 1], [1, 1]
+]
+const GRAFFE_MOVES = [
+  [0, -1],
+  [1, 0], [-1, 0]
+  [0, 1]
+]
+const LION_MOVES = [
+  [-1, -1], [0, -1], [1, -1],
+  [-1, 0], [1, 0],
+  [-1, 1], [0, 1], [1, 1],
+]
+const MOVES = [BABY_MOVES, CHIKEN_MOVES, ELEPHANT_MOVES, GRAFFE_MOVES, LION_MOVES]
+
+
 // 盤面表示
 const BAN_ICON = [
   "　",
