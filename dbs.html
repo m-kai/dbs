@@ -196,10 +196,23 @@ Banmen.prototype = {
         //
         if(MOVES[this.ban[from]].contains(to - from)){
           hands.push(new Hand(from, to))
-          // TODO 成チェック
+          // 成チェック
+          if(isBlackTurn && this.ban[from] == BABY && y == 0)
+            hands.push(new Hand(from, to, true))
+          if(!isBlackTurn && this.ban[from] == WHITE + BABY && y == 3)
+            hands.push(new Hand(from, to, true))
         }
       }
-      // TODO 持ち駒をサーチ
+
+      // 持ち駒打ち編
+      // 駒存在チェック
+      if(0 <= this.ban[to] && this.ban[to] < 5 + WHITE) continue
+      // 持ち駒をサーチ
+      for(j = 0;j < 5;j++) {
+        var k = j + (isBlackTurn ? 0 : WHITE)
+        if(this.mochi[k] <= 0) continue
+        hands.push(new Hand(-1 - k, to))
+      }
     }
     return hands
   },
@@ -221,10 +234,13 @@ Hand.prototype = {
 
 // ---- Utility Methods ----
 
+// 手を実行して画面更新
 function execute(hand){
   gban = gban.execute(hand)
   showBan()
 }
+
+// ---- メイン系 ----
 
 // global object
 var gban
