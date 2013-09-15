@@ -16,6 +16,32 @@
 
 <script>
 
+// ---- 言語拡張 ----
+
+// 配列コピー
+Array.prototype.clone = function(){
+  var arr = []
+  for(var i = 0;i < this.length;i++) arr[i] = this[i]
+  return arr
+}
+
+// 正負反転
+Array.prototype.negative = function(){
+  var arr = []
+  for(var i = 0;i < this.length;i++) arr[i] = -this[i]
+  return arr
+}
+
+// 存在確認
+Array.prototype.contains = function(obj){
+  for(var i = 0;i < this.length;i++) {
+    if(this[i] == obj) return true
+  }
+  return false
+}
+
+// ---- 定数定義----
+
 // 駒定数定義
 const SPACE = -1
 const BABY = 0
@@ -26,28 +52,23 @@ const LION = 4
 const WHITE = 5
 
 // 駒動き定義
-const BABY_MOVES = [[0, -1]]
-const CHIKEN_MOVES = [
+const DIRECTIONS = [
   [-1, -1], [0, -1], [1, -1],
   [-1, 0], [1, 0],
-  [0, 1]
+  [-1, 1], [0, 1], [1, 1]
 ]
-const ELEPHANT_MOVES = [
-  [-1, -1], [1, -1],
-  [-1, 1], [1, 1]
-]
-const GRAFFE_MOVES = [
-  [0, -1],
-  [1, 0], [-1, 0]
-  [0, 1]
-]
-const LION_MOVES = [
-  [-1, -1], [0, -1], [1, -1],
-  [-1, 0], [1, 0],
-  [-1, 1], [0, 1], [1, 1],
-]
-const MOVES = [BABY_MOVES, CHIKEN_MOVES, ELEPHANT_MOVES, GRAFFE_MOVES, LION_MOVES]
 
+const BABY_MOVES = [-3]
+const CHIKEN_MOVES = [-4, -3, -2, -1, 1, 3]
+const ELEPHANT_MOVES = [-4, -2, 2, 4]
+const GRAFFE_MOVES = [-3, -1, 1, 3]
+const LION_MOVES = [-4, -3, -2, -1, 1, 2, 3, 4]
+
+const MOVES = [
+  BABY_MOVES, CHIKEN_MOVES, ELEPHANT_MOVES, GRAFFE_MOVES, LION_MOVES,
+  BABY_MOVES.negative(), CHIKEN_MOVES.negative(), ELEPHANT_MOVES.negative(),
+  GRAFFE_MOVES.negative(), LION_MOVES.negative(),
+]
 
 // 盤面表示
 const BAN_ICON = [
@@ -71,14 +92,6 @@ const MOCHI_DEFAULT = [
   0,0,0,0,0,
   0,0,0,0,0,
 ]
-
-// ---- DSL系 ----
-
-Array.prototype.clone = function(){
-  var arr = []
-  for(var i = 0;i < this.length;i++) arr[i] = this[i]
-  return arr
-}
 
 // ---- VIEW ----
 
@@ -128,8 +141,8 @@ function Banmen(ban, mochi){
 }
 
 Banmen.prototype = {
-  ban : BAN_DEFAULT,
-  mochi : MOCHI_DEFAULT,
+  ban : BAN_DEFAULT.clone(),
+  mochi : MOCHI_DEFAULT.clone(),
   
   // 盤面に対して手を実行する
   execute : function(hand){
@@ -164,12 +177,31 @@ Banmen.prototype = {
   createLegalHands : function(isBlackTurn){
     var hands = []
     // 目的マスでループ
-    for(var i = 0;i < vban.length;i++){
-      var x = i % 3
-      var y = i / 3
-      // TODO 周辺8マスの駒をサーチ
+    for(var to = 0;to < this.ban.length;to++){
+      var x = to % 3
+      var y = Math.floor(to / 3)
+      // 味方駒存在チェック
+      if(isBlackTurn && 0 <= this.ban[to] && this.ban[to] < 5) continue
+      if(!isBlackTurn && WHITE <= this.ban[to] && this.ban[to] < 5 + WHITE) continue
+      // 周辺8マスの駒をサーチ
+      for(var j = 0;j < DIRECTIONS.length;j++) {
+        var fx = x + DIRECTIONS[j][0]
+        var fy = y + DIRECTIONS[j][1]
+        var from = fx + fy * 3
+        // 境界
+        if(fx < 0 || 3 <= fx || fy < 0 || 4 <= fy) continue
+        // 手番の駒
+        if(this.ban[from] < (isBlackTurn ? 0 : WHITE)
+            || (isBlackTurn ? 4 : 4 + WHITE) < this.ban[from]) continue
+        //
+        if(MOVES[this.ban[from]].contains(to - from)){
+          hands.push(new Hand(from, to))
+          // TODO 成チェック
+        }
+      }
       // TODO 持ち駒をサーチ
     }
+    return hands
   },
 
 }
