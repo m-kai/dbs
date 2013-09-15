@@ -70,17 +70,7 @@ const MOVES = [
   GRAFFE_MOVES.negative(), LION_MOVES.negative(),
 ]
 
-// 盤面表示
-const BAN_ICON = [
-  "　",
-  "↑ひ", "↑に", "↑ぞ", "↑き", "↑ら",
-  "↓ひ", "↓に", "↓ぞ", "↓き", "↓ら",
-]
-
-const MOCHI_ICON = [
-  "ひよこ：", "にわとり：", "ぞう：", "きりん：", "らいおん："
-]
-
+// 盤面のデフォルト
 const BAN_DEFAULT = [
   GIRAFFE + WHITE, LION + WHITE, ELEPHANT + WHITE,
   SPACE, BABY + WHITE, SPACE,
@@ -88,12 +78,31 @@ const BAN_DEFAULT = [
   ELEPHANT, LION, GIRAFFE
 ]
 
+// 盤面のデフォルト持ち駒
 const MOCHI_DEFAULT = [
   0,0,0,0,0,
   0,0,0,0,0,
 ]
 
+// 終了判断
+const ON_GAME = 0
+const BLACK_WIN = 1
+const WHITE_WIN = 2
+const DRAW_GAME = 3
+
 // ---- VIEW ----
+
+// 盤面表示
+const BAN_ICON = [
+  "　",
+  "↑ひ", "↑に", "↑ぞ", "↑き", "↑ら",
+  "↓ひ", "↓に", "↓ぞ", "↓き", "↓ら",
+]
+
+// 持ち駒表示
+const MOCHI_ICON = [
+  "ひよこ：", "にわとり：", "ぞう：", "きりん：", "らいおん："
+]
 
 // banを画面に反映する
 function showBan(){
@@ -217,6 +226,14 @@ Banmen.prototype = {
     return hands
   },
 
+  // 勝敗判定
+  checkEndGame : function() {
+    if(0 < this.mochi[LION] && 0 < this.mochi[WHITE + LION]) return DRAW_GAME
+    if(0 < this.mochi[LION]) return BLACK_WIN
+    if(this.mochi[WHITE + LION]) return WHITE_WIN
+    // TODO 千日手判定
+    return ON_GAME
+  },
 }
 
 // 手
