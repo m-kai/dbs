@@ -66,12 +66,15 @@ AI.prototype = {
     }
   },
 
+  // 評価関数です。通常はこれを実装すると良いです。
+  // 戻り値として大きな値は先手有利、小さい値は後手有利と考えます。
   evaluate : function(cban, isBlackTurn) {
     return 0;
   },
 }
 
 // AIサンプル：モンテカルロ
+// 評価関数を使わない人です。
 function MonteCarloAI(trials) {
   this.trials = trials // 一手毎の試行回数
 }

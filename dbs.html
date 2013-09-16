@@ -93,24 +93,23 @@ function handText(hand) {
   }
 }
 
+// AI処理(TODO mv2とダブってるのをどうにかしたい)
+function aiMove() {
+  if(gturn && black_ai) {
+    var h = black_ai.execute(gban, true)
+    $("#ai_memo").text(black_ai.memo)
+    mv2(h)
+  } else if(!gturn && white_ai) {
+    var h = white_ai.execute(gban, false)
+    $("#ai_memo").text(white_ai.memo)
+    mv2(h)
+  }
+}
+
 // 終局表示
 function showEndGame(eg) {
   $("#control").empty()
   $("#control").text(END_GAME_MSG[eg - 1])
-}
-
-// AI処理
-function aiMove() {
-  var h = null
-  if(gturn && black_ai) {
-    h = black_ai.execute(gban, true)
-    $("#ai_memo").text(black_ai.memo)
-    mv2(h)
-  } else if(!gturn && white_ai) {
-    h = white_ai.execute(gban, false)
-    $("#ai_memo").text(white_ai.memo)
-    mv2(h)
-  }
 }
 
 // 手を実行して画面更新
@@ -126,8 +125,18 @@ function mv2(hand){
   var eg
   if(eg = gban.checkEndGame()) {
     showEndGame(eg)
+  } else if(gturn && black_ai) {
+    // 先手番AI処理
+    var h = black_ai.execute(gban, true)
+    $("#ai_memo").text(black_ai.memo)
+    mv2(h)
+  } else if(!gturn && white_ai) {
+    // 後手番AI処理
+    var h = white_ai.execute(gban, false)
+    $("#ai_memo").text(white_ai.memo)
+    mv2(h)
   } else {
-    aiMove()
+    // 人間操作
     showControl()
   }
 }
