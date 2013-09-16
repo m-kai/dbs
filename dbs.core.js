@@ -199,6 +199,24 @@ Banmen.prototype = {
     if(checkBlack && this.ban.slice(0, 3).contains(LION)) return true
     if(!checkBlack && this.ban.slice(9, 12).contains(WHITE + LION)) return true
   },
+
+  // hash関数(2^52より小さいから大丈夫だと信じたい)
+  hash : function() {
+    var h = 0
+    for(i = 0;i < this.ban.length;i++) {
+      h += (this.ban[i] + 1) * Math.pow(7, i)
+    }
+    var m = [
+      this.mochi[BABY], this.mochi[ELEPHANT],
+      this.mochi[GIRAFFE], this.mochi[LION],
+      this.mochi[WHITE + BABY], this.mochi[WHITE + ELEPHANT],
+      this.mochi[WHITE + GIRAFFE], this.mochi[WHITE + LION],
+    ]
+    for(i = 0;i < m.length;i++) {
+      h += m[i] * Math.pow(3, i) * Math.pow(7, 12)
+    }
+    return h
+  }
 }
 
 // 手
