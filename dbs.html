@@ -58,8 +58,8 @@ function showBan(){
 // ---- Utility Methods ----
 
 // 手を実行して画面更新
-function execute(hand){
-  gban = gban.execute(hand)
+function mv(from, to, reverse){
+  gban = gban.execute(new Hand(from, to, reverse))
   showBan()
 }
 
