@@ -10,7 +10,6 @@ Javascriptでうごくどうぶつしょうぎです。開発者募集中です�
 ## TODO（やりたいこと）
 
 * 千日手判定
-* トライ判定（まじめに判定するかトライムーブを定義するか）
 * エンドゲーム問題（n手勝ちの有無を判定する）
 * 詰めどうぶつしょうぎ（n手詰めの有無を判定する）
 * 評価関数登録によるどうぶつしょうぎAIの作成
@@ -32,7 +31,7 @@ Javascriptでうごくどうぶつしょうぎです。開発者募集中です�
   * Hand.execute() Handの結果をglobalなbanに反映する。
   * new Banmen() 新規盤面を生成する
     * execute(hand) 手を実行した結果の盤面を返す
-    * createLegalHands(isBlackTurn) 現在局面で実行可能な手のリストを取得する
+    * createLegalHands(isBlackTurn, isCheck) 現在局面で実行可能な手のリストを取得する。isCheckがtureであれば王手のみを探索する
     * checkEndGame() 決着局面判定する
   * MonteCarloAI(trials) 試行回数を指定してAIを生成する(1000ぐらいで十分収束する)
     * execute(banmen, isBlackTurn) 局面を評価し最有力のHandを返す

@@ -126,15 +126,20 @@ Banmen.prototype = {
   },
 
   // 合法手リストを取得する
-  createLegalHands : function(isBlackTurn){
+  createLegalHands : function(isBlackTurn, isCheck){
     var hands = []
     // 目的マスでループ
-    for(var to = 0;to < this.ban.length;to++){
+    for(var to = 0;to < this.ban.length;to++) {
       var x = to % 3
       var y = Math.floor(to / 3)
       // 味方駒存在チェック
       if(isBlackTurn && 0 <= this.ban[to] && this.ban[to] < 5) continue
       if(!isBlackTurn && WHITE <= this.ban[to] && this.ban[to] < 5 + WHITE) continue
+      // 王手検索モード
+      if(isCheck) {
+        if(isBlackTurn && this.ban[to] != LION + WHITE) continue
+        if(!isBlackTurn && this.ban[to] != LION) continue
+      }
       // 周辺8マスの駒をサーチ
       for(var j = 0;j < DIRECTIONS.length;j++) {
         var fx = x + DIRECTIONS[j][0]
@@ -171,12 +176,28 @@ Banmen.prototype = {
 
   // 勝敗判定
   checkEndGame : function() {
+    // キャッチ判定
     if(0 < this.mochi[LION] && 0 < this.mochi[WHITE + LION]) return DRAW_GAME
     if(0 < this.mochi[LION]) return BLACK_WIN
     if(this.mochi[WHITE + LION]) return WHITE_WIN
-    // TODO トライ判定
+    // トライ判定
+    if(this.isTry(true) && this.isTry(false)) return DRAW_GAME
+    if(this.isTry(true)) return BLACK_WIN
+    if(this.isTry(false)) return WHITE_WIN
     // TODO 千日手判定
     return ON_GAME
+  },
+
+  // 王手判定(checkBlack:trueなら先手のライオンに対して)
+  isCheck : function(checkBlack) {
+    return 0 < this.createLegalHands(!checkBlack, true).length
+  },
+
+  // トライ判定
+  isTry : function(checkBlack) {
+    if(this.isCheck(checkBlack)) return false
+    if(checkBlack && this.ban.slice(0, 3).contains(LION)) return true
+    if(!checkBlack && this.ban.slice(9, 12).contains(WHITE + LION)) return true
   },
 }
 
