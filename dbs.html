@@ -15,6 +15,7 @@
 <div id="control"></div>
 <div>先手<select id="black_ai"></select></div>
 <div>後手<select id="white_ai"></select></div>
+<pre id="ai_memo"></pre>
 <script type="text/javascript" src="jquery-2.0.3.min.js"></script>
 <script type="text/javascript" src="dbs.core.js"></script>
 
@@ -99,10 +100,15 @@ function showEndGame(eg) {
 
 // AI処理
 function aiMove() {
+  var h = null
   if(gturn && black_ai) {
-    mv2(black_ai.execute(gban, true))
+    h = black_ai.execute(gban, true)
+    $("#ai_memo").text(black_ai.memo)
+    mv2(h)
   } else if(!gturn && white_ai) {
-    mv2(white_ai.execute(gban, false))
+    h = white_ai.execute(gban, false)
+    $("#ai_memo").text(white_ai.memo)
+    mv2(h)
   }
 }
 
