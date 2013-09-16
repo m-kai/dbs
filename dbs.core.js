@@ -15,9 +15,11 @@ Array.prototype.negative = function(){
 }
 
 // 存在確認
-Array.prototype.contains = function(obj){
+Array.prototype.contains = function(obj, times){
+  var count = times || 0
   for(var i = 0;i < this.length;i++) {
-    if(this[i] == obj) return true
+    if(this[i] == obj) count--
+    if(count < 0) return true
   }
   return false
 }
