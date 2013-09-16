@@ -43,13 +43,13 @@ const DIRECTIONS = [
 const BABY_MOVES = [-3]
 const CHIKEN_MOVES = [-4, -3, -2, -1, 1, 3]
 const ELEPHANT_MOVES = [-4, -2, 2, 4]
-const GRAFFE_MOVES = [-3, -1, 1, 3]
+const GIRAFFE_MOVES = [-3, -1, 1, 3]
 const LION_MOVES = [-4, -3, -2, -1, 1, 2, 3, 4]
 
 const MOVES = [
-  BABY_MOVES, CHIKEN_MOVES, ELEPHANT_MOVES, GRAFFE_MOVES, LION_MOVES,
+  BABY_MOVES, CHIKEN_MOVES, ELEPHANT_MOVES, GIRAFFE_MOVES, LION_MOVES,
   BABY_MOVES.negative(), CHIKEN_MOVES.negative(), ELEPHANT_MOVES.negative(),
-  GRAFFE_MOVES.negative(), LION_MOVES.negative(),
+  GIRAFFE_MOVES.negative(), LION_MOVES.negative(),
 ]
 
 // 盤面のデフォルト
