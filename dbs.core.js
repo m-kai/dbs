@@ -14,7 +14,7 @@ Array.prototype.negative = function(){
   return arr
 }
 
-// 存在確認
+// 存在確認(objがtimes個存在するかt/f)
 Array.prototype.contains = function(obj, times){
   var count = times || 0
   for(var i = 0;i < this.length;i++) {
@@ -89,42 +89,50 @@ function chikin2baby(koma){
 }
 
 // 盤面
-function Banmen(ban, mochi){
+function Banmen(ban, mochi, histories){
   this.ban = ban || BAN_DEFAULT.clone()
   this.mochi = mochi || MOCHI_DEFAULT.clone()
+  this.histories = histories || []
+  this.histories.push(this.hash())
 }
 
 Banmen.prototype = {
   ban : BAN_DEFAULT.clone(),
   mochi : MOCHI_DEFAULT.clone(),
+  histories : [],
   
   // 新しい盤面に対して手を実行する
   execute : function(hand){
     if(!hand) return
 
-    var nextBan = this.clone()
+    var ban = this.ban.clone()
+    var mochi = this.mochi.clone()
 
-    if(0 <= nextBan.ban[hand.to]){
+    if(0 <= ban[hand.to]){
       // 駒を取る
-      nextBan.mochi[chikin2baby(reverseBW(nextBan.ban[hand.to]))]++
+      mochi[chikin2baby(reverseBW(ban[hand.to]))]++
     }
     if(hand.from < 0){
       // 持ち駒使用
       var i = -hand.from - 1
-      nextBan.mochi[i]--
-      nextBan.ban[hand.to] = i
+      mochi[i]--
+      ban[hand.to] = i
     } else {
       // 普通の移動
-      nextBan.ban[hand.to] = nextBan.ban[hand.from] + (hand.reverse ? 1 : 0)
-      nextBan.ban[hand.from] = SPACE
+      ban[hand.to] = ban[hand.from] + (hand.reverse ? 1 : 0)
+      ban[hand.from] = SPACE
     }
 
-    return nextBan
+    return new Banmen(ban, mochi, this.histories.clone())
   },
   
   // コピーを作る
   clone : function(){
-    return new Banmen(this.ban.clone(), this.mochi.clone())
+    return new Banmen(
+      this.ban.clone(),
+      this.mochi.clone(),
+      this.histories.clone()
+    )
   },
 
   // 合法手リストを取得する
@@ -167,7 +175,7 @@ Banmen.prototype = {
       // 駒存在チェック
       if(0 <= this.ban[to] && this.ban[to] < 5 + WHITE) continue
       // 持ち駒をサーチ
-      for(j = 0;j < 5;j++) {
+      for(var j = 0;j < 5;j++) {
         var k = j + (isBlackTurn ? 0 : WHITE)
         if(this.mochi[k] <= 0) continue
         hands.push(new Hand(-1 - k, to))
@@ -186,7 +194,8 @@ Banmen.prototype = {
     if(this.isTry(true) && this.isTry(false)) return DRAW_GAME
     if(this.isTry(true)) return BLACK_WIN
     if(this.isTry(false)) return WHITE_WIN
-    // TODO 千日手判定
+    // 千日手判定
+    if(this.histories.contains(this.histories[this.histories.length - 1], 3)) return DRAW_GAME
     return ON_GAME
   },
 
@@ -205,7 +214,7 @@ Banmen.prototype = {
   // hash関数(2^52より小さいから大丈夫だと信じたい)
   hash : function() {
     var h = 0
-    for(i = 0;i < this.ban.length;i++) {
+    for(var i = 0;i < this.ban.length;i++) {
       h += (this.ban[i] + 1) * Math.pow(7, i)
     }
     var m = [
@@ -214,7 +223,7 @@ Banmen.prototype = {
       this.mochi[WHITE + BABY], this.mochi[WHITE + ELEPHANT],
       this.mochi[WHITE + GIRAFFE], this.mochi[WHITE + LION],
     ]
-    for(i = 0;i < m.length;i++) {
+    for(var i = 0;i < m.length;i++) {
       h += m[i] * Math.pow(3, i) * Math.pow(7, 12)
     }
     return h
@@ -250,9 +259,9 @@ MonteCarloAI.prototype = {
     this.memo = ""
 
     // 探索
-    for(i = 0;i < hands.length;i++) {
+    for(var i = 0;i < hands.length;i++) {
       results.push([0,0,0,0])
-      for(j = 0;j < this.trials;j++) {
+      for(var j = 0;j < this.trials;j++) {
         // 決着付くまでランダム試行する
         cban = banmen.execute(hands[i])
         cturn = isBlackTurn
