@@ -195,7 +195,7 @@ Banmen.prototype = {
     if(this.isTry(true)) return BLACK_WIN
     if(this.isTry(false)) return WHITE_WIN
     // 千日手判定
-    if(this.histories.contains(this.histories[this.histories.length - 1], 3)) return DRAW_GAME
+    if(this.histories.contains(this.histories[this.histories.length - 1], 2)) return DRAW_GAME
     return ON_GAME
   },
 

@@ -28,7 +28,7 @@ const BAN_ICON = [
 
 // 持ち駒表示
 const MOCHI_ICON = [
-  "ひよこ：", "にわとり：", "ぞう：", "きりん：", "らいおん："
+  "ひよこ", "にわとり", "ぞう", "きりん", "らいおん"
 ]
 
 // 座標
@@ -37,6 +37,13 @@ const COORD =[
   "A2", "B2", "C2",
   "A3", "B3", "C3",
   "A4", "B4", "C4",  
+]
+
+// 勝敗
+const END_GAME_MSG = [
+  "先手の勝ちです",
+  "後手の勝ちです",
+  "引き分けです",
 ]
 
 // banを画面に反映する
@@ -52,13 +59,13 @@ function showBan(){
   }
   var t = ""
   for(var i = 0;i < WHITE;i++){
-    if(0 < mochi[i]) t += MOCHI_ICON[i] + mochi[i]
+    if(0 < mochi[i]) t += MOCHI_ICON[i] + "：" + mochi[i]
   }
   $("#mochi_black").text(t)
 
   var t = ""
   for(var i = WHITE;i < WHITE * 2;i++){
-    if(0 < mochi[i]) t += MOCHI_ICON[i % WHITE] + mochi[i]
+    if(0 < mochi[i]) t += MOCHI_ICON[i % WHITE] + "：" + mochi[i]
   }
   $("#mochi_white").text(t)
 
@@ -69,24 +76,36 @@ function showControl(){
   var hands = gban.createLegalHands(gturn)
   $("#control").empty()
   for(var i = 0;i < hands.length;i++) {
-    var t
-    if(hands[i].from < 0) {
-      t = COORD[hands[i].to] + MOCHI_ICON[-hands[i].from - 1] + "打ち"
-    } else {
-      t = COORD[hands[i].from] + "→" + COORD[hands[i].to]
-    }
-    $("#control").append("<a href='javascript:mv(" + hands[i].from + "," + hands[i].to + "," + hands[i].reverse + ")'>" + t + "</a><br />")
+    $("#control").append("<a href='javascript:mv(" + hands[i].from + "," + hands[i].to + "," + hands[i].reverse + ")'>" + handText(hands[i]) + "</a><br />")
   }
 }
 
-// ---- Utility Methods ----
+// 手の表示形式テキストを取得する
+function handText(hand) {
+  if(hand.from < 0) {
+    return COORD[hand.to] + MOCHI_ICON[(-hand.from - 1) % WHITE] + "打ち"
+  } else {
+    return COORD[hand.to] + MOCHI_ICON[gban.ban[hand.from] % WHITE] + (hand.reverse ? "成" : "") + "（" + COORD[hand.from] + "）"
+  }
+}
+
+// 終局表示
+function showEndGame(eg) {
+  $("#control").empty()
+  $("#control").text(END_GAME_MSG[eg - 1])
+}
 
 // 手を実行して画面更新
 function mv(from, to, reverse){
   gban = gban.execute(new Hand(from, to, reverse))
   gturn = !gturn
   showBan()
-  showControl()
+  var eg
+  if(eg = gban.checkEndGame()) {
+    showEndGame(eg)
+  } else {
+    showControl()
+  }
 }
 
 // ---- メイン系 ----
