@@ -13,6 +13,8 @@
 </table>
 <div id="mochi_black"></div>
 <div id="control"></div>
+<div>先手<select id="black_ai"></select></div>
+<div>後手<select id="white_ai"></select></div>
 <script type="text/javascript" src="jquery-2.0.3.min.js"></script>
 <script type="text/javascript" src="dbs.core.js"></script>
 
@@ -95,30 +97,69 @@ function showEndGame(eg) {
   $("#control").text(END_GAME_MSG[eg - 1])
 }
 
+// AI処理
+function aiMove() {
+  if(gturn && black_ai) {
+    mv2(black_ai.execute(gban, true))
+  } else if(!gturn && white_ai) {
+    mv2(white_ai.execute(gban, false))
+  }
+}
+
 // 手を実行して画面更新
 function mv(from, to, reverse){
-  gban = gban.execute(new Hand(from, to, reverse))
+  mv2(new Hand(from, to, reverse))
+}
+
+// 手を実行して画面更新(めんどくさい方)
+function mv2(hand){
+  gban = gban.execute(hand)
   gturn = !gturn
   showBan()
   var eg
   if(eg = gban.checkEndGame()) {
     showEndGame(eg)
   } else {
+    aiMove()
     showControl()
   }
 }
 
 // ---- メイン系 ----
 
+// AI定義
+var AI_LIST = [
+  ["プレイヤー", null],
+  ["モンテカルロ1000", new MonteCarloAI(1000)],
+]
+
 // global object
 var gban
 var gturn
+var black_ai
+var white_ai
 
 $(function(){
   gban = new Banmen()
   gturn = true
+  black_ai = null
+  white_ai = null
   showBan()
   showControl()
+
+  // AIセレクタ作成
+  for(var i = 0;i < AI_LIST.length;i++) {
+    $("#black_ai").append("<option value='" + i + "'>" + AI_LIST[i][0] + "</option>")
+    $("#white_ai").append("<option value='" + i + "'>" + AI_LIST[i][0] + "</option>")
+  }
+  $("#black_ai").change(function(){
+    black_ai = AI_LIST[$(this).val()][1]
+    aiMove()
+  })
+  $("#white_ai").change(function(){
+    white_ai = AI_LIST[$(this).val()][1]
+    aiMove()
+  })
 })
 </script>
 </body>
