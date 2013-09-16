@@ -12,6 +12,7 @@
 <tr><td /><td /><td /></tr>
 </table>
 <div id="mochi_black"></div>
+<div id="control"></div>
 <script type="text/javascript" src="jquery-2.0.3.min.js"></script>
 <script type="text/javascript" src="dbs.core.js"></script>
 
@@ -28,6 +29,14 @@ const BAN_ICON = [
 // 持ち駒表示
 const MOCHI_ICON = [
   "ひよこ：", "にわとり：", "ぞう：", "きりん：", "らいおん："
+]
+
+// 座標
+const COORD =[
+  "A1", "B1", "C1",
+  "A2", "B2", "C2",
+  "A3", "B3", "C3",
+  "A4", "B4", "C4",  
 ]
 
 // banを画面に反映する
@@ -55,22 +64,42 @@ function showBan(){
 
 }
 
+// コントロールを表示する
+function showControl(){
+  var hands = gban.createLegalHands(gturn)
+  $("#control").empty()
+  for(var i = 0;i < hands.length;i++) {
+    var t
+    if(hands[i].from < 0) {
+      t = COORD[hands[i].to] + MOCHI_ICON[-hands[i].from - 1] + "打ち"
+    } else {
+      t = COORD[hands[i].from] + "→" + COORD[hands[i].to]
+    }
+    $("#control").append("<a href='javascript:mv(" + hands[i].from + "," + hands[i].to + "," + hands[i].reverse + ")'>" + t + "</a><br />")
+  }
+}
+
 // ---- Utility Methods ----
 
 // 手を実行して画面更新
 function mv(from, to, reverse){
   gban = gban.execute(new Hand(from, to, reverse))
+  gturn = !gturn
   showBan()
+  showControl()
 }
 
 // ---- メイン系 ----
 
 // global object
 var gban
+var gturn
 
 $(function(){
   gban = new Banmen()
+  gturn = true
   showBan()
+  showControl()
 })
 </script>
 </body>
