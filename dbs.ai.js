@@ -8,6 +8,7 @@ function AI() {
 AI.prototype = {
   memo : "", // viewに表示したりする
   maxDepth : 3, // alphaBeta探索時の最大探索深度
+  number : 0, // 読んだ手数
 
   // 探索を実行し結果(hand)を返す
   execute : function(banmen, isBlackTurn) {
@@ -16,7 +17,9 @@ AI.prototype = {
     var maxValue = -Infinity
     var minId = 0
     var minValue = Infinity
+    var startTime = new Date.getTime()
     this.memo = ""
+    this.number = 0
     for(var i = 0;i < hands.length;i++) {
       var v = this.alphaBeta(
         banmen.execute(hands[i]), !isBlackTurn, this.maxDepth,
@@ -29,8 +32,12 @@ AI.prototype = {
         minId = i
         minValue = v
       }
-      this.memo = this.memo + hands[i].from + "->" + hands[i].to + " : " + v + "\n"
+      this.memo += hands[i].from + "->" + hands[i].to + " : " + v + "\n"
     }
+    var duration = startTime - new Date.getTime()
+    this.memo = "total " + this.number + " move\n" +
+        "use " + duration + " ms\n" +
+        "speed " + (this.number*1000/duration) + " move/sec\n\n"
     return hands[isBlackTurn ? maxId : minId]
   },
 
@@ -130,8 +137,8 @@ MonteCarloSpecial.prototype.evaluate = function(cban, isBlackTurn) {
     tban = cban
     cturn = isBlackTurn
     while(!tban.checkEndGame()) {
-      cturn = !cturn
       chands = tban.createLegalHands(cturn)
+      cturn = !cturn
       ch = chands[Math.floor(Math.random() * chands.length)]
       tban = tban.execute(ch)
     }
