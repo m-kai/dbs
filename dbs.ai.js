@@ -18,26 +18,31 @@ AI.prototype = {
     var minId = 0
     var minValue = Infinity
     var startTime = new Date().getTime()
+    var a = -Infinity
+    var b = Infinity
     this.memo = ""
     this.number = 0
     for(var i = 0;i < hands.length;i++) {
       var v = this.alphaBeta(
         banmen.execute(hands[i]), !isBlackTurn, this.maxDepth,
-        -Infinity, Infinity
+        a, b
       )
       if(maxValue < v){
         maxId = i
         maxValue = v
+        if(isBlackTurn) a = v
       } else if(v < minValue) {
         minId = i
         minValue = v
+        if(!isBlackTurn) b = v
       }
       this.memo += hands[i].from + "->" + hands[i].to + " : " + v + "\n"
     }
     var duration = new Date().getTime() - startTime
     this.memo = "total " + this.number + " move\n" +
         "use " + duration + " ms\n" +
-        "speed " + (this.number*1000/duration) + " move/sec\n\n"
+        "speed " + (this.number*1000/duration) + " move/sec\n\n" +
+        this.memo
     return hands[isBlackTurn ? maxId : minId]
   },
 
