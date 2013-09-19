@@ -17,7 +17,7 @@ AI.prototype = {
     var maxValue = -Infinity
     var minId = 0
     var minValue = Infinity
-    var startTime = new Date.getTime()
+    var startTime = new Date().getTime()
     this.memo = ""
     this.number = 0
     for(var i = 0;i < hands.length;i++) {
@@ -34,7 +34,7 @@ AI.prototype = {
       }
       this.memo += hands[i].from + "->" + hands[i].to + " : " + v + "\n"
     }
-    var duration = startTime - new Date.getTime()
+    var duration = new Date().getTime() - startTime
     this.memo = "total " + this.number + " move\n" +
         "use " + duration + " ms\n" +
         "speed " + (this.number*1000/duration) + " move/sec\n\n"
@@ -43,6 +43,7 @@ AI.prototype = {
 
   // 標準探索アルゴリズム（αβカット）
   alphaBeta : function(cban, isBlackTurn, depth, a, b) {
+    this.number++
     var eg
     if(eg = cban.checkEndGame()) {
       // 終局まで探索
