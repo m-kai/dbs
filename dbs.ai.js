@@ -20,6 +20,7 @@ AI.prototype = {
 
     for(var depth = 0;depth <= this.maxDepth;depth++) {
       hands = this.searchTree(banmen, isBlackTurn, depth, hands)
+      if(3000 < new Date().getTime() - this.startTime) break // 5秒で探索終了
     }
 
     return hands[0]
@@ -60,7 +61,6 @@ AI.prototype = {
         "speed " + (this.number*1000/duration) + " move/sec\n\n" +
         memo + "\n" +
         this.memo
-    console.info(isBlackTurn)
     if(isBlackTurn) {
       result.sort(function(a,b) {return b[1]-a[1]})
     } else {
@@ -87,7 +87,7 @@ AI.prototype = {
       for(var i = 0;i < hands.length;i++) {
         a = Math.max(a, this.alphaBeta(cban.execute(hands[i]), !isBlackTurn, depth - 1, a, b))
         if(b <= a){
-          return b // βカット
+          return a // βカット
         }
       }
       return a
@@ -95,7 +95,7 @@ AI.prototype = {
       for(var i = 0;i < hands.length;i++) {
         b = Math.min(b, this.alphaBeta(cban.execute(hands[i]), !isBlackTurn, depth - 1, a, b))
         if(b <= a){
-          return a // αカット
+          return b // αカット
         }
       }
       return b
