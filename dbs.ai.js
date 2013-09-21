@@ -28,10 +28,6 @@ AI.prototype = {
 
   // 標準探索アルゴリズム：反復深化法
   searchTree : function(banmen, isBlackTurn, depth, hands){
-    var maxId = 0
-    var maxValue = -Infinity
-    var minId = 0
-    var minValue = Infinity
     var a = -Infinity
     var b = Infinity
     var result = []
@@ -42,17 +38,13 @@ AI.prototype = {
         banmen.execute(hands[i]), !isBlackTurn, depth,
         a, b
       )
-      if(maxValue < v){
-        maxId = i
-        maxValue = v
-        if(isBlackTurn) a = v
-      } else if(v < minValue) {
-        minId = i
-        minValue = v
-        if(!isBlackTurn) b = v
+      if(isBlackTurn && a < v){
+        a = v
+      } else if(!isBlackTurn && v < b) {
+        b = v
       }
-      memo += hands[i].from + "->" + hands[i].to + " : " + v + "\n"
       result.push([hands[i], v])
+      memo += hands[i].from + "->" + hands[i].to + " : " + v + "\n"
     }
     var duration = new Date().getTime() - this.startTime
     this.memo = "depth " + depth + "\n" +
@@ -66,7 +58,8 @@ AI.prototype = {
     } else {
       result.sort(function(a,b) {return a[1]-b[1]})
     }
-      return result.map(function(x){return x[0]})
+    // TODO 変換せずに返してInfinityをカットする処理とかしたい
+    return result.map(function(x){return x[0]})
   },
 
   // 標準探索アルゴリズム：αβカット
@@ -85,7 +78,7 @@ AI.prototype = {
     var hands = cban.createLegalHands(isBlackTurn)
     if(isBlackTurn) {
       for(var i = 0;i < hands.length;i++) {
-        a = Math.max(a, this.alphaBeta(cban.execute(hands[i]), !isBlackTurn, depth - 1, a, b))
+        a = Math.max(a, this.alphaBeta(cban.execute(hands[i]), false, depth - 1, a, b))
         if(b <= a){
           return a // βカット
         }
@@ -93,7 +86,7 @@ AI.prototype = {
       return a
     } else {
       for(var i = 0;i < hands.length;i++) {
-        b = Math.min(b, this.alphaBeta(cban.execute(hands[i]), !isBlackTurn, depth - 1, a, b))
+        b = Math.min(b, this.alphaBeta(cban.execute(hands[i]), true, depth - 1, a, b))
         if(b <= a){
           return b // αカット
         }
@@ -154,8 +147,8 @@ MonteCarloAI.prototype.execute = function(banmen, isBlackTurn) {
 
 // AI:モンテカルロ法を動的評価関数として使うヤツ
 function MonteCarloSpecial(maxDepth, trials) {
-  this.maxDepth = maxDepth || 7
-  this.trials = trials || 10
+  this.maxDepth = maxDepth || 6
+  this.trials = trials || 50
 }
 
 MonteCarloSpecial.prototype = new AI()
