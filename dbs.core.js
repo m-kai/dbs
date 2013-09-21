@@ -24,6 +24,15 @@ Array.prototype.contains = function(obj, times){
   return false
 }
 
+// いわゆるmap
+Array.prototype.map = function(func) {
+  result = []
+  for(var i = 0;i < this.length;i++) {
+    result.push(func(this[i]))
+  }
+  return result
+}
+
 // ---- 定数定義----
 
 // 駒定数定義

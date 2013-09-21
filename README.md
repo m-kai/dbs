@@ -10,7 +10,6 @@ Javascriptでうごくどうぶつしょうぎです。開発者募集中です�
 ## TODO（やりたいこと）
 
 * ハッシュ表を使ったαβ探索の高速化
-* 反復深化探索
 * エンドゲーム問題（n手勝ちの有無を判定する）
 * 詰めどうぶつしょうぎ（n手詰めの有無を判定する）
 * ランダム局面生成と局面特徴の抽出による機械学習
@@ -32,7 +31,9 @@ Javascriptでうごくどうぶつしょうぎです。開発者募集中です�
         * createLegalHands(isBlackTurn, isCheck) 現在局面で実行可能な手のリストを取得する。isCheckがtureであれば王手のみを探索する
         * checkEndGame() 決着局面判定する
 * dbs.ai.js
-    * MonteCarloAI(trials) 試行回数を指定してAIを生成する(1000ぐらいで十分収束する)
+    * AI AIの基底クラス。標準的な読みのアルゴリズムを搭載
         * execute(banmen, isBlackTurn) 局面を評価し最有力のHandを返す
+        * evaluate(cban, isBlackTurn) 評価関数。具象クラスで実装。中立0、先手勝ちInfinity、後手勝ち-Infinityと定義。
         * memo 各手の評価メモ
+    * MonteCarloAI(trials) 試行回数を指定してAIを生成する(1000ぐらいで十分収束する)
     * MonteCarloSpecial(maxDepth, trials) αβ探索に加え、評価関数としてモンテカルロ法を使ったものです。

@@ -12,19 +12,33 @@ AI.prototype = {
 
   // 探索を実行し結果(hand)を返す
   execute : function(banmen, isBlackTurn) {
+    this.memo = ""
+    this.number = 0
+    this.startTime = new Date().getTime()
+
     var hands = banmen.createLegalHands(isBlackTurn)
+
+    for(var depth = 0;depth <= this.maxDepth;depth++) {
+      hands = this.searchTree(banmen, isBlackTurn, depth, hands)
+    }
+
+    return hands[0]
+  },
+
+  // 標準探索アルゴリズム：反復深化法
+  searchTree : function(banmen, isBlackTurn, depth, hands){
     var maxId = 0
     var maxValue = -Infinity
     var minId = 0
     var minValue = Infinity
-    var startTime = new Date().getTime()
     var a = -Infinity
     var b = Infinity
-    this.memo = ""
-    this.number = 0
+    var result = []
+    var memo = ""
+
     for(var i = 0;i < hands.length;i++) {
       var v = this.alphaBeta(
-        banmen.execute(hands[i]), !isBlackTurn, this.maxDepth,
+        banmen.execute(hands[i]), !isBlackTurn, depth,
         a, b
       )
       if(maxValue < v){
@@ -36,17 +50,26 @@ AI.prototype = {
         minValue = v
         if(!isBlackTurn) b = v
       }
-      this.memo += hands[i].from + "->" + hands[i].to + " : " + v + "\n"
+      memo += hands[i].from + "->" + hands[i].to + " : " + v + "\n"
+      result.push([hands[i], v])
     }
-    var duration = new Date().getTime() - startTime
-    this.memo = "total " + this.number + " move\n" +
+    var duration = new Date().getTime() - this.startTime
+    this.memo = "depth " + depth + "\n" +
+        "total " + this.number + " move\n" +
         "use " + duration + " ms\n" +
         "speed " + (this.number*1000/duration) + " move/sec\n\n" +
+        memo + "\n" +
         this.memo
-    return hands[isBlackTurn ? maxId : minId]
+    console.info(isBlackTurn)
+    if(isBlackTurn) {
+      result.sort(function(a,b) {return b[1]-a[1]})
+    } else {
+      result.sort(function(a,b) {return a[1]-b[1]})
+    }
+      return result.map(function(x){return x[0]})
   },
 
-  // 標準探索アルゴリズム（αβカット）
+  // 標準探索アルゴリズム：αβカット
   alphaBeta : function(cban, isBlackTurn, depth, a, b) {
     this.number++
     var eg
